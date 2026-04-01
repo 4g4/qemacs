@@ -3880,6 +3880,8 @@ void display_init(DisplayState *ds, EditState *e, enum DisplayType do_disp,
          */
         if (e->width >= e->screen->width * 3 / 4) {
             ds->wrap = WRAP_LINE;
+        } else {
+            ds->wrap = WRAP_TRUNCATE;
         }
     }
     /* select default values */

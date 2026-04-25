@@ -1662,9 +1662,6 @@ static void tty_dpy_flush(QEditScreen *s)
     gotopos = 0;
 
     shadow = ts->screen_size;
-    /* We cannot print anything on the bottom right screen cell,
-     * pretend it's OK: */
-    ts->screen[shadow - 1] = ts->screen[2 * shadow - 1];
 
     for (y = 0; y < s->height; y++) {
         if (ts->line_updated[y]) {

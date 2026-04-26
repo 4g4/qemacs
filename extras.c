@@ -485,6 +485,7 @@ static void do_adjust_window(EditState *s, int argval, int flags)
                 e->y1 += delta;
             if (e->y2 == y)
                 e->y2 += delta;
+            update_split_ratio(e);
         }
     }
     qs->complete_refresh = 1;

@@ -7228,6 +7228,8 @@ EditState *qe_new_window(EditBuffer *b,
     s->y1 = y1;
     s->x2 = x1 + width;
     s->y2 = y1 + height;
+    s->split_x_ratio = s->split_y_ratio = 0;
+    s->split_width_ratio = s->split_height_ratio = 1000;
     s->flags = flags;
     compute_client_area(s);
 
@@ -9516,12 +9518,11 @@ void do_refresh(EditState *s1)
                 e->y2 = content_height;
                 e->x2 = width;
             } else {
-                /* NOTE: to ensure that no rounding errors are made,
-                   we resize the absolute coordinates */
-                e->x1 = (e->x1 * width + qs->width / 2) / qs->width;
-                e->x2 = (e->x2 * width + qs->width / 2) / qs->width;
-                e->y1 = (e->y1 * content_height + qs->content_height / 2) / qs->content_height;
-                e->y2 = (e->y2 * content_height + qs->content_height / 2) / qs->content_height;
+                e->x1 = (width * e->split_x_ratio + 500) / 1000;
+                e->x2 = e->x1 + (width * e->split_width_ratio + 500) / 1000;
+
+                e->y1 = (content_height * e->split_y_ratio + 500) / 1000;
+                e->y2 = e->y1 + (content_height * e->split_height_ratio + 500) / 1000;
             }
         }
 
@@ -9777,6 +9778,28 @@ void do_delete_hidden_windows(EditState *s)
     }
 }
 
+void update_split_ratio(EditState *s)
+{
+    int total_w = s->qs->width;
+    int total_h = s->qs->content_height;
+
+    s->split_x_ratio = s->x1 * 1000 / total_w;
+    s->split_y_ratio = s->y1 * 1000 / total_h;
+
+    s->split_width_ratio = (s->x2 - s->x1) * 1000 / total_w;
+    s->split_height_ratio = (s->y2 - s->y1) * 1000 / total_h;
+}
+
+void update_all_split_ratios(QEmacsState *qs)
+{
+    EditState *e;
+    for (e = qs->first_window; e; e = e->next_window) {
+        if (e->flags & WF_MINIBUF)
+            continue;
+        update_split_ratio(e);
+    }
+}
+
 EditState *qe_split_window(EditState *s, int side_by_side, int prop)
 {
     EditState *e;
@@ -9829,6 +9852,9 @@ EditState *qe_split_window(EditState *s, int side_by_side, int prop)
 
     /* reposition new window in window list just after s */
     edit_attach(e, s->next_window);
+
+    update_split_ratio(s);
+    update_split_ratio(e);
 
     do_refresh(s);
     return e;
@@ -10508,6 +10534,7 @@ static void handle_mouse_motion(EditState *e, QEEvent *ev) {
                 qs->motion_y = mouse_y;
             }
             if (changed) {
+                update_split_ratio(e);
                 compute_client_area(e);
                 //do_refresh(qs->first_window);
                 qs->complete_refresh = 1;
@@ -10520,6 +10547,7 @@ static void handle_mouse_motion(EditState *e, QEEvent *ev) {
         if ((mouse_y / scale) != (qs->motion_y / scale)) {
             qs->motion_y = mouse_y;
             window_resize(e, e->x2 - e->x1, qs->motion_y - e->y1);
+            update_all_split_ratios(qs);
             do_refresh(qs->first_window);
             qe_display(qs);
         }
@@ -10529,6 +10557,7 @@ static void handle_mouse_motion(EditState *e, QEEvent *ev) {
         if ((mouse_x / scale) != (qs->motion_x / scale)) {
             qs->motion_x = mouse_x;
             window_resize(e, qs->motion_x - e->x1, e->y2 - e->y1);
+            update_all_split_ratios(qs);
             do_refresh(qs->first_window);
             qe_display(qs);
         }

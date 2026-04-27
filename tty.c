@@ -1642,7 +1642,7 @@ static void tty_dpy_flush(QEditScreen *s)
 {
     TTYState *ts = s->priv_data;
     TTYChar *ptr, *ptr1, *ptr2, *ptr3, *ptr4, cc, blankcc;
-    int y, shadow, ch, bgcolor, fgcolor, shifted, gotopos, attr;
+    int y, ch, bgcolor, fgcolor, shifted, gotopos, attr;
 
     /* CG: Should optimize output by computing it in a temporary buffer
      * and flushing it in one call to fwrite()
@@ -1661,8 +1661,6 @@ static void tty_dpy_flush(QEditScreen *s)
     shifted = 0;
     gotopos = 0;
 
-    shadow = ts->screen_size;
-
     for (y = 0; y < s->height; y++) {
         if (ts->line_updated[y]) {
             ts->line_updated[y] = 0;
@@ -1673,12 +1671,12 @@ static void tty_dpy_flush(QEditScreen *s)
              * patch loop guard cell to make sure the simple loop stops
              * without testing ptr1 < ptr2
              */
-            cc = ptr2[shadow];
-            ptr2[shadow] = ptr2[0] + 1;
-            while (ptr1[0] == ptr1[shadow]) {
+            cc = ptr2[ts->screen_size];
+            ptr2[ts->screen_size] = ptr2[0] + 1;
+            while (ptr1[0] == ptr1[ts->screen_size]) {
                 ptr1++;
             }
-            ptr2[shadow] = cc;
+            ptr2[ts->screen_size] = cc;
 
             if (ptr1 == ptr2)
                 continue;
@@ -1687,7 +1685,7 @@ static void tty_dpy_flush(QEditScreen *s)
              * the first difference on row at ptr1 is before ptr2
              * so we do not need a test on ptr2 > ptr1
              */
-            while (ptr2[-1] == ptr2[shadow - 1]) {
+            while (ptr2[-1] == ptr2[ts->screen_size - 1]) {
                 --ptr2;
             }
 
@@ -1735,7 +1733,7 @@ static void tty_dpy_flush(QEditScreen *s)
             gotopos = 1;
             while (ptr1 < ptr4) {
                 cc = *ptr1;
-                ptr1[shadow] = cc;
+                ptr1[ts->screen_size] = cc;
                 ptr1++;
                 ch = TTY_CHAR_GET_CH(cc);
                 if ((char32_t)ch == TTY_CHAR_NONE)
@@ -1956,7 +1954,7 @@ static void tty_dpy_flush(QEditScreen *s)
                 /* the current attribute is already set correctly */
                 TTY_FPUTS("\033[K", s->STDOUT);
                 while (ptr1 < ptr2) {
-                    ptr1[shadow] = cc;
+                    ptr1[ts->screen_size] = cc;
                     ptr1++;
                 }
             }

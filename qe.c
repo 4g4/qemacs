@@ -10882,7 +10882,7 @@ static void show_usage(void)
     }
     printf("\n"
            "Report bugs to bug@qemacs.org.  First, please see the Bugs\n"
-           "section of the QEmacs manual or the file BUGS.\n");
+           "section of the QEmacs manual.\n");
     exit(1);
 }
 

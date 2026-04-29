@@ -2679,6 +2679,21 @@ int eb_goto_bol2(EditBuffer *b, int offset, int *countp)
     return offset;
 }
 
+/* return offset of the first non-whitespace character of the line containing offset */
+int eb_goto_bol_nspace(EditBuffer *b, int offset)
+{
+    int offset1 = eb_goto_bol(b, offset);
+
+    for (;;) {
+        offset = offset1;
+        char32_t c = eb_nextc(b, offset, &offset1);
+        if (qe_isblank(c))
+            continue;
+        else
+            return offset;
+    }
+}
+
 /* test for blank line starting at <offset>.
  * return 0 if not blank.
  * return 1 if blank and store start of next line in <*offset1>.

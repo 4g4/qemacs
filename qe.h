@@ -612,6 +612,7 @@ int eb_fgets(EditBuffer *b, char *buf, int size,
 int eb_prev_line(EditBuffer *b, int offset);
 int eb_goto_bol(EditBuffer *b, int offset);
 int eb_goto_bol2(EditBuffer *b, int offset, int *countp);
+int eb_goto_bol_nspace(EditBuffer *b, int offset);
 int eb_is_blank_line(EditBuffer *b, int offset, int *offset1);
 int eb_is_in_indentation(EditBuffer *b, int offset);
 int eb_goto_eol(EditBuffer *b, int offset);
@@ -885,6 +886,7 @@ struct ModeDef {
     void (*move_up_down)(EditState *s, int dir);
     void (*move_left_right)(EditState *s, int dir);
     void (*move_bol)(EditState *s);
+    void (*move_bol_nspace)(EditState *s);
     void (*move_eol)(EditState *s);
     void (*move_bof)(EditState *s);
     void (*move_eof)(EditState *s);
@@ -1595,6 +1597,7 @@ void do_kill_beginning_of_line(EditState *s, int argval);
 void do_kill_whole_line(EditState *s, int n);
 void do_kill_word(EditState *s, int n);
 void text_move_bol(EditState *s);
+void text_move_bol_nspace(EditState *s);
 void text_move_eol(EditState *s);
 void text_move_bof(EditState *s);
 void text_move_eof(EditState *s);

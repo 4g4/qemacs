@@ -346,9 +346,10 @@ void url_exit(void)
 }
 
 /* asynchronous redisplay signal received */
-void url_redisplay(void)
+void url_redisplay(QEditScreen *s)
 {
     url_display_request = 1;
+    s->qs->complete_refresh = 1;
 }
 
 int get_clock_ms(void) {

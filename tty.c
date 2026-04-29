@@ -658,11 +658,7 @@ static void tty_term_resize(qe__unused__ int sig)
     QEditScreen *s = tty_screen;
 
     if (s) {
-        tty_dpy_invalidate(s);
-
-        //fprintf(stderr, "tty_term_resize: width=%d, height=%d\n", s->width, s->height);
-
-        url_redisplay();
+        url_redisplay(s);
     }
 }
 

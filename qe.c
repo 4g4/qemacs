@@ -803,6 +803,12 @@ void do_bol(EditState *s)
         s->mode->move_bol(s);
 }
 
+void do_bol_nspace(EditState *s)
+{
+    do_maybe_set_mark(s);
+    text_move_bol_nspace(s);
+}
+
 void do_eol(EditState *s)
 {
     do_maybe_set_mark(s);
@@ -836,6 +842,11 @@ void text_move_eof(EditState *s)
 void text_move_bol(EditState *s)
 {
     s->offset = eb_goto_bol(s->b, s->offset);
+}
+
+void text_move_bol_nspace(EditState *s)
+{
+    s->offset = eb_goto_bol_nspace(s->b, s->offset);
 }
 
 void text_move_eol(EditState *s)
@@ -11128,6 +11139,9 @@ static const CmdDef basic_commands[] = {
     CMD0( "beginning-of-line", "C-a, home, S-home",
           "Move point to the beginning of the line",
           do_bol)
+    CMD0( "back-to-indentation", "",
+          "Move point to the first non-whitespace character on the current line",
+          do_bol_nspace)
     CMD0( "end-of-line", "C-e, end, S-end",
           "Move point to the end of the line",
           do_eol)

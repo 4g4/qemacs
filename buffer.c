@@ -2679,7 +2679,9 @@ int eb_goto_bol2(EditBuffer *b, int offset, int *countp)
     return offset;
 }
 
-/* return offset of the first non-whitespace character of the line containing offset */
+/* return offset of the first non-whitespace character of the line containing offset.
+ * If there are no non-whitespace characters on the line, return the end of line.
+ */
 int eb_goto_bol_nspace(EditBuffer *b, int offset)
 {
     int offset1 = eb_goto_bol(b, offset);
@@ -2687,9 +2689,7 @@ int eb_goto_bol_nspace(EditBuffer *b, int offset)
     for (;;) {
         offset = offset1;
         char32_t c = eb_nextc(b, offset, &offset1);
-        if (qe_isblank(c))
-            continue;
-        else
+        if (!qe_isblank(c))
             return offset;
     }
 }

@@ -886,7 +886,6 @@ struct ModeDef {
     void (*move_up_down)(EditState *s, int dir);
     void (*move_left_right)(EditState *s, int dir);
     void (*move_bol)(EditState *s);
-    void (*move_bol_nspace)(EditState *s);
     void (*move_eol)(EditState *s);
     void (*move_bof)(EditState *s);
     void (*move_eof)(EditState *s);

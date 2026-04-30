@@ -1365,8 +1365,9 @@ void do_search_string(EditState *s, const char *search_str, int mode)
         last = eb_goto_bol(s->b, offset);
     }
     if (mode == CMD_LIST_MATCHING_LINES) {
+        do_kill_buffer(s, "*occur*", 1);
         // XXX: should check prefix argument to clear buffer
-        b1 = qe_new_buffer(s->qs, "*occur*", BF_UTF8 | (s->b->flags & BF_STYLES));
+        b1 = qe_new_buffer(s->qs, "*occur*", BC_REUSE | BF_UTF8 | (s->b->flags & BF_STYLES));
         if (!b1)
             return;
         start = b1->total_size;

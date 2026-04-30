@@ -11143,7 +11143,7 @@ static const CmdDef basic_commands[] = {
           "Move point to the beginning of the line",
           do_bol)
     CMD0( "back-to-indentation", "",
-          "Move point to the first non-whitespace character on this line.",
+          "Move point to the first non-whitespace character on the current line",
           do_bol_nspace)
     CMD0( "end-of-line", "C-e, end, S-end",
           "Move point to the end of the line",

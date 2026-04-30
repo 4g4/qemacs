@@ -1659,6 +1659,16 @@ static void tty_dpy_flush(QEditScreen *s)
 
     shadow = ts->screen_size;
 
+#if 0
+    /* This hack is only required for pretty old terminals.
+     * We don't need it in most of the modern terminals so we
+     * disable it currently.
+     *
+     * We cannot print anything on the bottom right screen cell,
+     * pretend it's OK: */
+    ts->screen[shadow - 1] = ts->screen[2 * shadow - 1];
+#endif
+
     for (y = 0; y < s->height; y++) {
         if (ts->line_updated[y]) {
             ts->line_updated[y] = 0;

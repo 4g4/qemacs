@@ -2689,9 +2689,7 @@ int eb_goto_bol_nspace(EditBuffer *b, int offset)
     for (;;) {
         offset = offset1;
         char32_t c = eb_nextc(b, offset, &offset1);
-        if (qe_isblank(c))
-            continue;
-        else
+        if (!qe_isblank(c))
             return offset;
     }
 }

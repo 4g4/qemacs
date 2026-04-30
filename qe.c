@@ -149,8 +149,6 @@ void qe_register_mode(QEmacsState *qs, ModeDef *m, int flags)
             m->move_left_right = text_move_left_right_visual;
         if (!m->move_bol)
             m->move_bol = text_move_bol;
-        if (!m->move_bol_nspace)
-            m->move_bol_nspace = text_move_bol_nspace;
         if (!m->move_eol)
             m->move_eol = text_move_eol;
         if (!m->move_bof)
@@ -808,9 +806,7 @@ void do_bol(EditState *s)
 void do_bol_nspace(EditState *s)
 {
     do_maybe_set_mark(s);
-
-    if (s->mode->move_bol_nspace)
-        s->mode->move_bol_nspace(s);
+    text_move_bol_nspace(s);
 }
 
 void do_eol(EditState *s)
@@ -10713,7 +10709,6 @@ ModeDef text_mode = {
     .move_up_down = text_move_up_down,
     .move_left_right = text_move_left_right_visual,
     .move_bol = text_move_bol,
-    .move_bol_nspace = text_move_bol_nspace,
     .move_eol = text_move_eol,
     .move_bof = text_move_bof,
     .move_eof = text_move_eof,

@@ -7228,8 +7228,6 @@ EditState *qe_new_window(EditBuffer *b,
     s->y1 = y1;
     s->x2 = x1 + width;
     s->y2 = y1 + height;
-    s->split_x_ratio = s->split_y_ratio = 0;
-    s->split_width_ratio = s->split_height_ratio = 1000;
     s->flags = flags;
     compute_client_area(s);
 
@@ -9518,11 +9516,7 @@ void do_refresh(EditState *s1)
                 e->y2 = content_height;
                 e->x2 = width;
             } else {
-                e->x1 = (width * e->split_x_ratio + 500) / 1000;
-                e->x2 = e->x1 + (width * e->split_width_ratio + 500) / 1000;
-
-                e->y1 = (content_height * e->split_y_ratio + 500) / 1000;
-                e->y2 = e->y1 + (content_height * e->split_height_ratio + 500) / 1000;
+                restore_coordinate_from_ratio(e);
             }
         }
 
@@ -9780,14 +9774,14 @@ void do_delete_hidden_windows(EditState *s)
 
 void update_split_ratio(EditState *s)
 {
-    int total_w = s->qs->width;
-    int total_h = s->qs->content_height;
+    int total_w = s->screen->width;
+    int total_h = s->screen->height;
 
-    s->split_x_ratio = s->x1 * 1000 / total_w;
-    s->split_y_ratio = s->y1 * 1000 / total_h;
+    s->xx1 = s->x1 * UNIT_SIZE / total_w;
+    s->xx2 = s->x2 * UNIT_SIZE / total_w;
 
-    s->split_width_ratio = (s->x2 - s->x1) * 1000 / total_w;
-    s->split_height_ratio = (s->y2 - s->y1) * 1000 / total_h;
+    s->yy1 = s->y1 * UNIT_SIZE / total_h;
+    s->yy2 = s->y2 * UNIT_SIZE / total_h;
 }
 
 void update_all_split_ratios(QEmacsState *qs)
@@ -9798,6 +9792,18 @@ void update_all_split_ratios(QEmacsState *qs)
             continue;
         update_split_ratio(e);
     }
+}
+
+void restore_coordinate_from_ratio(EditState *s)
+{
+    int total_w = s->screen->width;
+    int total_h = s->screen->height;
+
+    s->x1 = s->xx1 * total_w / UNIT_SIZE;
+    s->x2 = s->xx2 * total_w / UNIT_SIZE;
+
+    s->y1 = s->yy1 * total_h / UNIT_SIZE;
+    s->y2 = s->yy2 * total_h / UNIT_SIZE;
 }
 
 EditState *qe_split_window(EditState *s, int side_by_side, int prop)

@@ -101,6 +101,8 @@ typedef struct QEProperty QEProperty;
 #define MAX_BUFFERNAME_SIZE  256        /* Size for a buffer name buffer */
 #define MAX_CMDNAME_SIZE     32         /* Size for a command name buffer */
 
+#define UNIT_SIZE (1 << 10) /* window corrdinates ratio */
+
 extern const char str_version[];
 extern const char str_credits[];
 
@@ -773,7 +775,7 @@ struct EditState {
     int cols, rows;
     /* full window size, including borders */
     int x1, y1, x2, y2;         /* window coordinates in device units */
-    //int xx1, yy1, xx2, yy2;     /* window coordinates in 1/1000 */
+    int xx1, yy1, xx2, yy2;     /* window coordinates in 1/UNIT_SIZE */
 
     int flags; /* display flags */
 #define WF_POPUP      0x0001 /* popup window (with borders) */
@@ -1502,6 +1504,9 @@ void qe_kill_buffer(QEmacsState *qs, EditBuffer *b);
 int get_glyph_width(QEditScreen *screen, EditState *s, QETermStyle style, char32_t c);
 int get_line_height(QEditScreen *screen, EditState *s, QETermStyle style);
 void do_refresh(EditState *s);
+void update_split_ratio(EditState *s);
+void update_all_split_ratios(QEmacsState *qs);
+void restore_coordinate_from_ratio(EditState *s);
 // should take direction argument
 void do_other_window(EditState *s);
 void do_previous_window(EditState *s);

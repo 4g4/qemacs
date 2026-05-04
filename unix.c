@@ -69,8 +69,8 @@ static int url_fdmax;
 static URLHandler url_handlers[256];
 static int url_exit_request;
 static int url_display_request;
-static LIST_HEAD(pid_handlers);
-static LIST_HEAD(bottom_halves);
+static QE_LIST_HEAD(pid_handlers);
+static QE_LIST_HEAD(bottom_halves);
 static QETimer *first_timer;
 
 
